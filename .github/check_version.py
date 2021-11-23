@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Check that version numbers match.
 
-Check version number in setup.json and aiida_statefile_scheduler/__init__.py and make sure
+Check version number in setup.json and aiida_statefile_schedulers/__init__.py and make sure
 they match.
 """
 from __future__ import absolute_import
@@ -29,7 +29,7 @@ if VERSION != setup_content['version']:
     print("Version number in '{}': {}".format(SETUP_FNAME,
                                               setup_content['version']))
     print("Version number in '{}/__init__.py': {}".format(
-        'aiida_statefile_scheduler', VERSION))
+        'aiida_statefile_schedulers', VERSION))
     sys.exit(1)
 
 # Overwrite version in setup.json
