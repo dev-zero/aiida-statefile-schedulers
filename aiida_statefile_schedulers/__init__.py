@@ -5,4 +5,4 @@ aiida_statefile_schedulers
 Simple statefile driven task schedulers
 """
 
-__version__ = '0.1.0a0'
+__version__ = '0.2.0'
