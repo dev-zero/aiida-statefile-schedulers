@@ -9,6 +9,7 @@ from aiida.schedulers.datastructures import JobInfo, JobState
 
 _MAP_STATUS = {  # the order of the states are important
     'UNDETERMINED': JobState.UNDETERMINED,
+    'QUEUED_HELD': JobState.QUEUED_HELD,
     'QUEUED': JobState.QUEUED,
     'RUNNING': JobState.RUNNING,
     'DONE': JobState.DONE,
@@ -35,10 +36,10 @@ class StatefileDirectScheduler(DirectScheduler):
             raise TypeError("If provided, the 'jobs' variable must be a string or a list/tuple of strings")
 
         command = [
-            'export LC_ALL=C;',  # avoid any localization effects
+            'export LC_ALL=C;',  # avoid localization effects
             'set -eu;',  # make errors fatal and abort at undefined variables
             'cd "${AIIDA_STATEFILE_DIR}";',
-            'command ls -1',
+            'command ls -1',  # ensure we're calling POSIX ls, not some alias
         ]
 
         if jobs:
@@ -55,8 +56,6 @@ class StatefileDirectScheduler(DirectScheduler):
         Return a list of JobInfo objects, one of each job,
         each relevant parameters implemented.
         """
-        print("stdout", stdout)
-        print("stderr", stderr)
 
         if retval and any(msg in stderr for msg in ("unbound variable", "parameter not set")):
             raise SchedulerError("This scheduler requires the AIIDA_STATEFILE_DIR environment variable set on the target computer")
@@ -115,7 +114,6 @@ class StatefileDirectScheduler(DirectScheduler):
             # only when we get an error but no statefile at all we have to add an entry
             jobs[jobid] = create_job(jobid, JobState.UNDETERMINED)
 
-        print(jobs)
         return list(jobs.values())
 
     def _get_submit_command(self, submit_script):
@@ -131,7 +129,11 @@ class StatefileDirectScheduler(DirectScheduler):
         """
 
         # this runs in the calculation directory, using the pwd as jobid assumed to be safe
-        submit_command = f'export LC_ALL=C; set -eu; echo "{{\'working_directory\': \'$(pwd)\', \'command\': {submit_script}}}" > "$AIIDA_STATEFILE_DIR/$(basename $(pwd)).QUEUED" ; basename $(pwd)'
+        submit_command = (f'export LC_ALL=C;'
+                          f'set -eu;'
+                          f'jobid=$(basename $(pwd));'
+                          f'echo -e "cwd=\'$(pwd)\'\\ncmd={submit_script}" > "${{AIIDA_STATEFILE_DIR}}/${{jobid}}.QUEUED";'
+                          f'echo ${{jobid}}')
 
         self.logger.info(f'submitting with: {submit_command}')
 
@@ -156,7 +158,9 @@ class StatefileDirectScheduler(DirectScheduler):
         """
         Return the command to kill the job with specified jobid.
         """
-        kill_command = f'export LC_ALL=C; set -eu; touch "$AIIDA_STATEFILE_DIR/$(basename $(pwd)).KILL"'
+        kill_command = (f'export LC_ALL=C;'
+                        f'set -eu;'
+                        f'touch "${{AIIDA_STATEFILE_DIR}}/{jobid}.KILL"')
 
         self.logger.info(f'killing job {jobid}')
 
