@@ -20,9 +20,9 @@ with open(SETUP_PATH) as f:
 
 # Get version from python package
 sys.path.insert(0, os.path.join(this_path, os.pardir))
-import aiida_statefile_scheduler  # pylint: disable=wrong-import-position
+import aiida_statefile_schedulers  # pylint: disable=wrong-import-position
 
-VERSION = aiida_statefile_scheduler.__version__
+VERSION = aiida_statefile_schedulers.__version__
 
 if VERSION != setup_content['version']:
     print('Version number mismatch detected:')

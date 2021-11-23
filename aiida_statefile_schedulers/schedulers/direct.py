@@ -20,7 +20,7 @@ class StatefileDirectScheduler(DirectScheduler):
     """
     Support for the direct execution bypassing schedulers.
     """
-    _logger = Scheduler._logger.getChild('directstatefile')
+    _logger = Scheduler._logger.getChild('directstatefile')  # pylint: disable=W0212
 
     # Query only by list of jobs and not by user
     _features = {
@@ -33,7 +33,9 @@ class StatefileDirectScheduler(DirectScheduler):
         """
 
         if jobs and not isinstance(jobs, (str, tuple, list)):
-            raise TypeError("If provided, the 'jobs' variable must be a string or a list/tuple of strings")
+            raise TypeError(
+                "If provided, the 'jobs' variable must be a string or a list/tuple of strings"
+            )
 
         command = [
             'export LC_ALL=C;',  # avoid localization effects
@@ -44,7 +46,9 @@ class StatefileDirectScheduler(DirectScheduler):
 
         if jobs:
             joblist = [jobs] if isinstance(jobs, str) else jobs
-            command += [f"{job}.{state}" for job in joblist for state in _MAP_STATUS]
+            command += [
+                f'{job}.{state}' for job in joblist for state in _MAP_STATUS
+            ]
 
         return ' '.join(command)
 
@@ -57,8 +61,12 @@ class StatefileDirectScheduler(DirectScheduler):
         each relevant parameters implemented.
         """
 
-        if retval and any(msg in stderr for msg in ("unbound variable", "parameter not set")):
-            raise SchedulerError("This scheduler requires the AIIDA_STATEFILE_DIR environment variable set on the target computer")
+        if retval and any(
+                msg in stderr
+                for msg in ('unbound variable', 'parameter not set')):
+            raise SchedulerError(
+                'This scheduler requires the AIIDA_STATEFILE_DIR environment variable set on the target computer'
+            )
 
         def map_status(state: str):
             try:
@@ -85,7 +93,8 @@ class StatefileDirectScheduler(DirectScheduler):
 
             if statestr == 'KILL':
                 # ignore the KILL request "state"
-                self.logger.info(f'ignoring the KILL pseudo-state file for: {jobid}')
+                self.logger.info(
+                    f'ignoring the KILL pseudo-state file for: {jobid}')
                 continue
 
             state = map_status(statestr)
@@ -103,7 +112,9 @@ class StatefileDirectScheduler(DirectScheduler):
             cmd, path, errmsg = line.split(':')
 
             if cmd == 'cd':
-                raise SchedulerError(f'Error while accessing the AIIDA_STATEFILE_DIR at {path}: {errmsg}')
+                raise SchedulerError(
+                    f'Error while accessing the AIIDA_STATEFILE_DIR at {path}: {errmsg}'
+                )
 
             jobid, statestr = path.split('.')
 
@@ -129,11 +140,12 @@ class StatefileDirectScheduler(DirectScheduler):
         """
 
         # this runs in the calculation directory, using the pwd as jobid assumed to be safe
-        submit_command = (f'export LC_ALL=C;'
-                          f'set -eu;'
-                          f'jobid=$(basename $(pwd));'
-                          f'echo -e "cwd=\'$(pwd)\'\\ncmd={submit_script}" > "${{AIIDA_STATEFILE_DIR}}/${{jobid}}.QUEUED";'
-                          f'echo ${{jobid}}')
+        submit_command = (
+            f'export LC_ALL=C;'
+            f'set -eu;'
+            f'jobid=$(basename $(pwd));'
+            f'echo -e "cwd=\'$(pwd)\'\\ncmd={submit_script}" > "${{AIIDA_STATEFILE_DIR}}/${{jobid}}.QUEUED";'
+            f'echo ${{jobid}}')
 
         self.logger.info(f'submitting with: {submit_command}')
 
@@ -148,9 +160,13 @@ class StatefileDirectScheduler(DirectScheduler):
         """
 
         if retval:
-            if any(msg in stderr for msg in ("unbound variable", "parameter not set")):
-                raise SchedulerError("This scheduler requires the AIIDA_STATEFILE_DIR environment variable set on the target computer")
-            raise SchedulerError(f"Creating the QUEUED statefile failed: {stderr}")
+            if any(msg in stderr
+                   for msg in ('unbound variable', 'parameter not set')):
+                raise SchedulerError(
+                    'This scheduler requires the AIIDA_STATEFILE_DIR environment variable set on the target computer'
+                )
+            raise SchedulerError(
+                f'Creating the QUEUED statefile failed: {stderr}')
 
         return stdout.strip()
 
@@ -173,7 +189,9 @@ class StatefileDirectScheduler(DirectScheduler):
         :return: True if everything seems ok, False otherwise.
         """
         if retval != 0:
-            self.logger.error(f'Error in _parse_kill_output: retval={retval}; stdout={stdout}; stderr={stderr}')
+            self.logger.error(
+                f'Error in _parse_kill_output: retval={retval}; stdout={stdout}; stderr={stderr}'
+            )
             return False
 
         if stderr.strip():
