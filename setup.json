@@ -2,7 +2,7 @@
     "name": "aiida-statefile-schedulers",
     "author": "Tiziano Müller",
     "author_email": "tm@dev-zero.ch",
-    "description": "Simple statefile driven task schedulers",
+    "description": "Simple statefile-driven task schedulers for AiiDA",
     "url": "https://github.com/dev-zero/aiida-statefile-schedulers",
     "license": "MIT",
     "classifiers": [
@@ -12,7 +12,7 @@
         "Natural Language :: English",
         "Framework :: AiiDA"
     ],
-    "version": "0.1.0a0",
+    "version": "0.2.0",
     "entry_points": {
         "aiida.schedulers": [
             "statefile_schedulers.direct = aiida_statefile_schedulers.schedulers.direct:StatefileDirectScheduler"
