@@ -5,9 +5,9 @@
 
 # aiida-statefile-schedulers
 
-Simple statefile driven task schedulers: Currently AiiDA relies mostly on full fledged task schedulers to run jobs
-in complex workflows. Running such workflows with the direct solver often means that many processes run together
-even when running the workflow directly (e.g. not by the daemon), overloading a single node.
+Simple statefile-driven task schedulers: Currently AiiDA relies mostly on full fledged task schedulers to run jobs
+in complex workflows. Running such workflows with the direct scheduler often means that many processes run together
+even when *running* the workflow directly (e.g. not submitting to the daemon), overloading a single node.
 
 This scheduler does not run any jobs. Instead, it creates *state files* of the form `$jobid.QUEUED` in the directory
 `${AIIDA_STATE_DIR}` (an environment variable you have to set in your `.profile/.bash_profile` of the target machine),
@@ -23,8 +23,6 @@ The state files can also be renamed instead of created. A sample runner can be f
 
 ## Features
 
-  ```
-
 ## Installation
 
 ```shell
@@ -32,7 +30,6 @@ pip install aiida-statefile-scheduler
 verdi quicksetup  # better to set up a new profile
 verdi plugin list aiida.schedulers  # should now show your calculation plugins
 ```
-
 
 ## Development
 
