@@ -19,6 +19,11 @@ repos:
     name: yapf
     args: ["-i"]
 
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.8.0.1
+  hooks:
+  - id: shellcheck
+
 - repo: local
   hooks:
   - id: pylint

@@ -5,7 +5,7 @@ set -euo pipefail
 while true ; do
     qfile=$(command ls -1rt *.QUEUED 2>/dev/null | head -1 || true)
 
-    if [ -z ${qfile} ] ; then
+    if [ -z "${qfile}" ] ; then
         echo "No *.QUEUED file found in the current directory, waiting (press ctrl+c to terminate)..."
         sleep 5
         continue
@@ -16,13 +16,13 @@ while true ; do
     rfile="${qfile/.QUEUED/.RUNNING}"
     dfile="${qfile/.QUEUED/.DONE}"
 
-    mv "${qfile}" "${rfile}"
+    mv -v "${qfile}" "${rfile}"
     # use a subshell to isolate it
     (
         set -eux
         source "${rfile}"
         cd "${cwd}"
         source "${cmd}"
-    )
-    mv "${rfile}" "${dfile}"
+    ) || true  # ignore the subshells result
+    mv -v "${rfile}" "${dfile}"
 done
