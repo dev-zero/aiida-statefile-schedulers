@@ -23,6 +23,12 @@ repos:
   rev: v0.8.0.1
   hooks:
   - id: shellcheck
+    args: ["-x"]
+    exclude: >
+      (?x)^(
+          docs/.*|
+          .github/.*|
+      )$
 
 - repo: local
   hooks:
@@ -31,7 +37,7 @@ repos:
     types: [file, python]
     name: pylint
     description: "This hook runs the pylint static code analyzer"
-    exclude: &exclude_files >
+    exclude: >
       (?x)^(
           docs/.*|
           .github/.*|

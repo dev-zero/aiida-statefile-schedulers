@@ -3,7 +3,7 @@
 set -euo pipefail
 
 while true ; do
-    qfile=$(command ls -1rt *.QUEUED 2>/dev/null | head -1 || true)
+    qfile=$(command ls -1rt -- *.QUEUED 2>/dev/null | head -1 || true)
 
     if [ -z "${qfile}" ] ; then
         echo "No *.QUEUED file found in the current directory, waiting (press ctrl+c to terminate)..."
@@ -20,8 +20,10 @@ while true ; do
     # use a subshell to isolate it
     (
         set -eux
+        # shellcheck source=SCRIPTDIR/sample-statedir/feb1-d203-4542-a49c-ded53dcd38a5.QUEUED
         source "${rfile}"
         cd "${cwd}"
+        # shellcheck source=/dev/null
         source "${cmd}"
     ) || true  # ignore the subshells result
     mv -v "${rfile}" "${dfile}"
