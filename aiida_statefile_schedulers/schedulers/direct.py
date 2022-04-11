@@ -4,7 +4,7 @@ Plugin for direct execution via statefiles.
 """
 
 from aiida.schedulers import Scheduler, SchedulerError
-from aiida.schedulers.plugins.direct import DirectScheduler
+from aiida.schedulers.plugins.direct import DirectScheduler, DirectJobResource
 from aiida.schedulers.datastructures import JobInfo, JobState
 
 _MAP_STATUS = {  # the order of the states are important
@@ -14,7 +14,6 @@ _MAP_STATUS = {  # the order of the states are important
     'RUNNING': JobState.RUNNING,
     'DONE': JobState.DONE,
 }
-
 
 class StatefileDirectScheduler(DirectScheduler):
     """
@@ -26,6 +25,8 @@ class StatefileDirectScheduler(DirectScheduler):
     _features = {
         'can_query_by_user': True,
     }
+
+    _job_resource_class = DirectJobResource
 
     def _get_joblist_command(self, jobs=None, user=None):
         """
