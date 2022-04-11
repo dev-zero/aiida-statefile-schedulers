@@ -110,11 +110,11 @@ class StatefileDirectScheduler(DirectScheduler):
             if not line:  # ignore empty
                 continue
 
-            cmd, path, errmsg = line.split(':')
+            cmd, path, errmsg = line.rsplit(':', maxsplit=2)
 
-            if cmd == 'cd':
+            if 'cd' in cmd:
                 raise SchedulerError(
-                    f'Error while accessing the AIIDA_STATEFILE_DIR at {path}: {errmsg}'
+                    f'Error while accessing the AIIDA_STATEFILE_DIR at {path.strip()}: {errmsg.strip()}'
                 )
 
             jobid, statestr = path.split('.')
